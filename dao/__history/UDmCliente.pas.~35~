@@ -1,0 +1,148 @@
+unit UDmCliente;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, UDmConexao, Data.DB, UClientModel,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TDmCliente = class(TDataModule)
+    fdPesquisar: TFDQuery;
+    fdInserir:   TFDQuery;
+    fdAlterar:   TFDQuery;
+    fdExcluir:   TFDQuery;
+  private
+    { Private declarations }
+  public
+    function GerarID: Integer;
+    procedure Pesquisar(sNome: string);
+    procedure CarregarCliente(oCliente: TCliente; iCodigo: Integer);
+    function Inserir(oCliente: TCliente; out sErro: string): Boolean;
+    function Alterar(oCliente: TCliente; out sErro: string): Boolean;
+    function Excluir(iCodigo: Integer; out sErro: string): Boolean;
+  end;
+
+var
+  dmCliente: TDmCliente;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+{$R *.dfm}
+
+{ TdmCliente }
+
+function TDmCliente.GerarID: Integer;
+var
+  fdSequencia: TFDQuery;
+begin
+  fdSequencia := TFDQuery.Create(nil);
+  try
+    fdSequencia.Connection := DmConexao.FDConexao;
+    fdSequencia.SQL.Text   :=
+      'SELECT COALESCE(MAX(id), 0) + 1 AS seq FROM cliente';
+    fdSequencia.Open;
+    Result := fdSequencia.FieldByName('seq').AsInteger;
+  finally
+    FreeAndNil(fdSequencia);
+  end;
+end;
+
+procedure TDmCliente.Pesquisar(sNome: string);
+begin
+  fdPesquisar.Close;
+  fdPesquisar.ParamByName('nome').AsString := '%' + sNome + '%';
+  fdPesquisar.Open;
+  fdPesquisar.First;
+end;
+
+procedure TDmCliente.CarregarCliente(oCliente: TCliente; iCodigo: Integer);
+var
+  fdCliente: TFDQuery;
+begin
+  fdCliente := TFDQuery.Create(nil);
+  try
+    fdCliente.Connection  := DmConexao.FDConexao;
+    fdCliente.SQL.Text    :=
+      'SELECT * FROM cliente WHERE id = :id';
+    fdCliente.ParamByName('id').AsInteger := iCodigo;
+    fdCliente.Open;
+    with oCliente do
+    begin
+      ID        := fdCliente.FieldByName('id').AsInteger;
+      Nome      := fdCliente.FieldByName('nome').AsString;
+      Tipo      := fdCliente.FieldByName('tipo').AsString;
+      Documento := fdCliente.FieldByName('documento').AsString;
+      Telefone  := fdCliente.FieldByName('telefone').AsString;
+    end;
+  finally
+    FreeAndNil(fdCliente);
+  end;
+end;
+
+function TDmCliente.Inserir(oCliente: TCliente; out sErro: string): Boolean;
+begin
+  with fdInserir, oCliente do
+  begin
+    ParamByName('id').AsInteger       := GerarID;
+    ParamByName('nome').AsString      := Nome;
+    ParamByName('tipo').AsString      := Tipo;
+    ParamByName('documento').AsString := Documento;
+    ParamByName('telefone').AsString  := Telefone;
+    try
+      ExecSQL;
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        sErro  := 'Ocorreu um erro ao inserir cliente: ' + sLineBreak + E.Message;
+        Result := False;
+      end;
+    end;
+  end;
+end;
+
+function TDmCliente.Alterar(oCliente: TCliente; out sErro: string): Boolean;
+begin
+  with fdAlterar, oCliente do
+  begin
+    ParamByName('nome').AsString      := Nome;
+    ParamByName('tipo').AsString      := Tipo;
+    ParamByName('documento').AsString := Documento;
+    ParamByName('telefone').AsString  := Telefone;
+    ParamByName('id').AsInteger       := ID;
+    try
+      ExecSQL;
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        sErro  := 'Ocorreu um erro ao inserir cliente: ' + sLineBreak + E.Message;
+        Result := False;
+      end;
+    end;
+  end;
+end;
+
+function TDmCliente.Excluir(iCodigo: Integer; out sErro: string): Boolean;
+begin
+  with fdExcluir do
+  begin
+    ParamByName('id').AsInteger := iCodigo;
+    try
+      ExecSQL;
+      Result := True;
+    except
+      on E: Exception do
+      begin
+        sErro := 'Ocorreu um erro ao excluir o cliente: ' + sLineBreak + E.Message;
+        Result := False;
+      end;
+    end;
+  end;
+end;
+
+end.

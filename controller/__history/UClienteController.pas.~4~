@@ -1,0 +1,28 @@
+unit UClienteController;
+
+interface
+uses
+  UClientModel, UDmCliente;
+type
+  TClienteController = class
+  public
+    function Inserir(oCliente: TCliente; var sErro: string) : Boolean;
+    function Alterar(oCliente: TCliente; var sErro: string) : Boolean;
+end;
+
+implementation
+
+{ TClienteController }
+
+function TClienteController.Alterar(oCliente: TCliente;
+  var sErro: string): Boolean;
+begin
+  Result := DMCliente.Alterar(oCliente, sErro);
+end;
+
+function TClienteController.Inserir(oCliente: TCliente; var sErro: string): Boolean;
+begin
+  Result := DMCliente.Inserir(oCliente, sErro);
+end;
+
+end.

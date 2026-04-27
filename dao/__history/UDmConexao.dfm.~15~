@@ -1,0 +1,16 @@
+object DmConexao: TDmConexao
+  Height = 185
+  Width = 247
+  object FdConexao: TFDConnection
+    Params.Strings = (
+      'Database=C:\databases\crudDelphi.sql'
+      'CharacterSet=UTF8'
+      'Password=root'
+      'Server=localhost'
+      'User_Name=postgres'
+      'DriverID=PG')
+    LoginPrompt = False
+    Left = 104
+    Top = 56
+  end
+end

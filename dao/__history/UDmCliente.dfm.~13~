@@ -1,0 +1,8 @@
+object dmCliente: TdmCliente
+  Height = 307
+  Width = 607
+  object FDConnection1: TFDConnection
+    Left = 144
+    Top = 120
+  end
+end

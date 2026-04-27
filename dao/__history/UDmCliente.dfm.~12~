@@ -1,0 +1,48 @@
+object dmCliente: TdmCliente
+  Height = 307
+  Width = 607
+  object sqlPesquisar: TSQLDataSet
+    CommandText = 'select id, nome, telefone'#13#10'from cliente'#13#10'where (nome like :nome)'
+    MaxBlobSize = -1
+    Params = <
+      item
+        DataType = ftString
+        Name = 'nome'
+        ParamType = ptInput
+      end>
+    SQLConnection = DmConexao.sqlConexao
+    Left = 56
+    Top = 32
+  end
+  object sqlInserir: TSQLDataSet
+    MaxBlobSize = -1
+    Params = <>
+    SQLConnection = DmConexao.sqlConexao
+    Left = 144
+    Top = 32
+  end
+  object sqlAlterar: TSQLDataSet
+    MaxBlobSize = -1
+    Params = <>
+    SQLConnection = DmConexao.sqlConexao
+    Left = 240
+    Top = 32
+  end
+  object sqlExcluir: TSQLDataSet
+    MaxBlobSize = -1
+    Params = <>
+    SQLConnection = DmConexao.sqlConexao
+    Left = 328
+    Top = 32
+  end
+  object dspPesquisar: TDataSetProvider
+    Left = 48
+    Top = 104
+  end
+  object cdsPesquisar: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    Left = 48
+    Top = 176
+  end
+end

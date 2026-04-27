@@ -1,0 +1,19 @@
+object DmConexao: TDmConexao
+  Height = 185
+  Width = 247
+  object FdConexao: TFDConnection
+    Params.Strings = (
+      'Database=postgres'
+      'CharacterSet=UTF8'
+      'Password=cruddelphikey'
+      
+        'Server=postgresql://postgres.gxieylwqogeizkhcdkuv:cruddelphikey@' +
+        'aws-1-us-east-2.pooler.supabase.com:6543/postgres'
+      'User_Name=postgres.gxieylwqogeizkhcdkuv'
+      'DriverID=PG'
+      'Port=6543')
+    LoginPrompt = False
+    Left = 104
+    Top = 56
+  end
+end

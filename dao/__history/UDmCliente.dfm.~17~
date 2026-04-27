@@ -1,0 +1,87 @@
+object t: Tt
+  Height = 307
+  Width = 607
+  object fdPesquisar: TFDQuery
+    Connection = DmConexao.FDConexao
+    SQL.Strings = (
+      'SELECT * FROM cliente WHERE nome ILIKE :nome ORDER BY nome')
+    Left = 136
+    Top = 96
+    ParamData = <
+      item
+        Name = 'NOME'
+        ParamType = ptInput
+      end>
+  end
+  object fdInserir: TFDQuery
+    SQL.Strings = (
+      
+        'INSERT INTO cliente (id, nome, tipo, documento, telefone) VALUES' +
+        ' (:id, :nome, :tipo, :documento, :telefone)')
+    Left = 240
+    Top = 104
+    ParamData = <
+      item
+        Name = 'ID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'NOME'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TIPO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'DOCUMENTO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TELEFONE'
+        ParamType = ptInput
+      end>
+  end
+  object fdAlterar: TFDQuery
+    Connection = DmConexao.FDConexao
+    SQL.Strings = (
+      
+        'UPDATE cliente SET nome=:nome, tipo=:tipo, documento=:documento,' +
+        ' telefone=:telefone WHERE id=:id')
+    Left = 360
+    Top = 128
+    ParamData = <
+      item
+        Name = 'NOME'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TIPO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'DOCUMENTO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TELEFONE'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ID'
+        ParamType = ptInput
+      end>
+  end
+  object fdExcluir: TFDQuery
+    Connection = DmConexao.FDConexao
+    SQL.Strings = (
+      'DELETE FROM cliente WHERE id=:id')
+    Left = 488
+    Top = 144
+    ParamData = <
+      item
+        Name = 'ID'
+        ParamType = ptInput
+      end>
+  end
+end

@@ -1,0 +1,159 @@
+unit UDmCliente;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, UDmConexao, Data.DB, UClientModel,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TDmCliente = class(TDataModule)
+    fdPesquisar: TFDQuery;
+    fdInserir:   TFDQuery;
+    fdAlterar:   TFDQuery;
+    fdExcluir:   TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    function GerarID: Integer;
+    procedure Pesquisar(sNome: string);
+    procedure CarregarCliente(oCliente: TCliente; iCodigo: Integer);
+    function Inserir(oCliente: TCliente; out sErro: string): Boolean;
+    function Alterar(oCliente: TCliente; out sErro: string): Boolean;
+    function Excluir(iCodigo: Integer; out sErro: string): Boolean;
+  end;
+
+var
+  dmCliente: TDmCliente;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+{$R *.dfm}
+
+{ TdmCliente }
+
+function TDmCliente.GerarID: Integer;
+var
+  fdSequencia: TFDQuery;
+begin
+  fdSequencia := TFDQuery.Create(nil);
+  try
+    fdSequencia.Connection := DmConexao.FDConexao;
+    fdSequencia.SQL.Text   :=
+      'SELECT COALESCE(MAX(id), 0) + 1 AS seq FROM cliente';
+    fdSequencia.Open;
+    Result := fdSequencia.FieldByName('seq').AsInteger;
+  finally
+    FreeAndNil(fdSequencia);
+  end;
+end;
+
+procedure TDmCliente.Pesquisar(sNome: string);
+begin
+  fdPesquisar.Close;
+  fdPesquisar.ParamByName('nome').AsString := '%' + sNome + '%';
+  fdPesquisar.Open;
+  fdPesquisar.First;
+end;
+
+procedure TDmCliente.CarregarCliente(oCliente: TCliente; iCodigo: Integer);
+var
+  fdCliente: TFDQuery;
+begin
+  fdCliente := TFDQuery.Create(nil);
+  try
+    fdCliente.Connection  := DmConexao.FDConexao;
+    fdCliente.SQL.Text    :=
+      'SELECT * FROM cliente WHERE id = :id';
+    fdCliente.ParamByName('id').AsInteger := iCodigo;
+    fdCliente.Open;
+    with oCliente do
+    begin
+      ID        := fdCliente.FieldByName('id').AsInteger;
+      Nome      := fdCliente.FieldByName('nome').AsString;
+      Tipo      := fdCliente.FieldByName('tipo').AsString;
+      Documento := fdCliente.FieldByName('documento').AsString;
+      Telefone  := fdCliente.FieldByName('telefone').AsString;
+    end;
+  finally
+    FreeAndNil(fdCliente);
+  end;
+end;
+
+procedure TDmCliente.DataModuleCreate(Sender: TObject);
+begin
+  fdPesquisar.Connection := DmConexao.FDConexao;
+  fdInserir.Connection   := DmConexao.FDConexao;
+  fdAlterar.Connection   := DmConexao.FDConexao;
+  fdExcluir.Connection   := DmConexao.FDConexao;
+end;
+
+function TDmCliente.Inserir(oCliente: TCliente; out sErro: string): Boolean;
+begin
+  if not Assigned(oCliente) then
+    raise Exception.Create('O Cliente está NIL');
+
+  try
+    fdInserir.ParamByName('id').AsInteger       := GerarID;
+    fdInserir.ParamByName('nome').AsString      := oCliente.Nome;
+    fdInserir.ParamByName('tipo').AsString      := oCliente.Tipo;
+    fdInserir.ParamByName('documento').AsString := oCliente.Documento;
+    fdInserir.ParamByName('telefone').AsString  := oCliente.Telefone;
+
+    fdInserir.ExecSQL;
+    Result := True;
+
+  except
+    on E: Exception do
+    begin
+      sErro  := 'Ocorreu um erro ao inserir cliente: ' + sLineBreak + E.Message;
+      Result := False;
+    end;
+  end;
+end;
+
+function TDmCliente.Alterar(oCliente: TCliente; out sErro: string): Boolean;
+begin
+  if not Assigned(oCliente) then
+    raise Exception.Create('O Cliente está NIL');
+
+  try
+    fdAlterar.ParamByName('nome').AsString      := oCliente.Nome;
+    fdAlterar.ParamByName('tipo').AsString      := oCliente.Tipo;
+    fdAlterar.ParamByName('documento').AsString := oCliente.Documento;
+    fdAlterar.ParamByName('telefone').AsString  := oCliente.Telefone;
+    fdAlterar.ParamByName('id').AsInteger       := oCliente.ID;
+
+    fdAlterar.ExecSQL;
+    Result := True;
+
+  except
+    on E: Exception do
+    begin
+      sErro  := 'Ocorreu um erro ao alterar cliente: ' + sLineBreak + E.Message;
+      Result := False;
+    end;
+  end;
+end;
+
+function TDmCliente.Excluir(iCodigo: Integer; out sErro: string): Boolean;
+begin
+  try
+    fdExcluir.ParamByName('id').AsInteger := iCodigo;
+    fdExcluir.ExecSQL;
+    Result := True;
+
+  except
+    on E: Exception do
+    begin
+      sErro := 'Ocorreu um erro ao excluir o cliente: ' + sLineBreak + E.Message;
+      Result := False;
+    end;
+  end;
+end;
+
+end.

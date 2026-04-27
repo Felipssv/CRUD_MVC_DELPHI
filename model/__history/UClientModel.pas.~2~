@@ -1,0 +1,17 @@
+unit UClientModel;
+
+interface
+
+type
+  TCliente = class
+  private
+  public
+    property ID: Integer read FID write FID;
+    property Nome: string;
+    property Tipo: string read FTipo write FTipo;
+    property Documento: string read FDocumento write FDocumento;
+    property Telefone: string read FTelefone write FTelefone'
+  end;
+implementation
+
+end.

@@ -1,0 +1,16 @@
+program ExemploMVC;
+
+uses
+  Vcl.Forms,
+  UFormPrincipal in 'view\UFormPrincipal.pas' {FormPrincipal},
+  UFrmCadastrarCliente in 'view\UFrmCadastrarCliente.pas' {UFormCadastrarCliente};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFormPrincipal, FormPrincipal);
+  Application.CreateForm(TUFormCadastrarCliente, UFormCadastrarCliente);
+  Application.Run;
+end.

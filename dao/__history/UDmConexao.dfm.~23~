@@ -1,0 +1,20 @@
+object DmConexao: TDmConexao
+  OnCreate = DataModuleCreate
+  Height = 185
+  Width = 247
+  object FDConexao: TFDConnection
+    Params.Strings = (
+      'User_Name=postgres'
+      'Password=root'
+      'Database=exemploMVC'
+      'DriverID=PG')
+    Connected = True
+    Left = 56
+    Top = 48
+  end
+  object FDPhysPgDriverLink1: TFDPhysPgDriverLink
+    VendorLib = 'C:\Program Files (x86)\PostgreSQL\psqlODBC\bin\libpq.dll'
+    Left = 160
+    Top = 72
+  end
+end

@@ -1,0 +1,10 @@
+object DmConexao: TDmConexao
+  OnCreate = DataModuleCreate
+  Height = 185
+  Width = 247
+  object FdConexao: TFDConnection
+    LoginPrompt = False
+    Left = 104
+    Top = 56
+  end
+end

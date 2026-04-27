@@ -1,0 +1,4 @@
+object dmCliente: TdmCliente
+  Height = 307
+  Width = 607
+end
