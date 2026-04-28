@@ -10,14 +10,13 @@ uses
 
 type
   TDmCliente = class(TDataModule)
-    fdPesquisar: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
+  private
     fdInserir:   TFDQuery;
     fdAlterar:   TFDQuery;
     fdExcluir:   TFDQuery;
-    procedure DataModuleCreate(Sender: TObject);
-  private
-    { Private declarations }
   public
+    fdPesquisar: TFDQuery;
     procedure Pesquisar(sNome: string);
     procedure CarregarCliente(oCliente: TCliente; iCodigo: Integer);
     function Inserir(oCliente: TCliente; out sErro: string): Boolean;
@@ -39,6 +38,7 @@ implementation
 procedure TDmCliente.Pesquisar(sNome: string);
 begin
   fdPesquisar.Close;
+  fdPesquisar.SQL.Text := 'SELECT * FROM cliente WHERE nome ILIKE :nome ORDER BY nome';
   fdPesquisar.ParamByName('nome').AsString := '%' + sNome + '%';
   fdPesquisar.Open;
   fdPesquisar.First;
@@ -71,9 +71,20 @@ end;
 
 procedure TDmCliente.DataModuleCreate(Sender: TObject);
 begin
+  fdPesquisar := TFDQuery.Create(Self);
+  fdPesquisar.Name := 'fdPesquisar';
   fdPesquisar.Connection := DmConexao.FDConexao;
+
+  fdInserir := TFDQuery.Create(Self);
+  fdInserir.Name := 'fdInserir';
   fdInserir.Connection   := DmConexao.FDConexao;
+
+  fdAlterar := TFDQuery.Create(Self);
+  fdAlterar.Name := 'fdAlterar';
   fdAlterar.Connection   := DmConexao.FDConexao;
+
+  fdExcluir := TFDQuery.Create(Self);
+  fdExcluir.Name := 'fdExcluir';
   fdExcluir.Connection   := DmConexao.FDConexao;
 end;
 
@@ -83,6 +94,12 @@ begin
     raise Exception.Create('O Cliente está NIL');
 
   try
+    fdInserir.Close;
+    fdInserir.SQL.Text :=
+      'INSERT INTO cliente (nome, tipo, documento, telefone) ' +
+      'VALUES (:nome, :tipo, :documento, :telefone) ' +
+      'RETURNING id';
+
     fdInserir.ParamByName('nome').AsString      := oCliente.Nome;
     fdInserir.ParamByName('tipo').AsString      := oCliente.Tipo;
     fdInserir.ParamByName('documento').AsString := oCliente.Documento;
@@ -106,6 +123,11 @@ begin
     raise Exception.Create('O Cliente está NIL');
 
   try
+    fdAlterar.Close;
+    fdAlterar.SQL.Text :=
+      'UPDATE cliente SET nome=:nome, tipo=:tipo, documento=:documento, ' +
+      'telefone=:telefone WHERE id=:id';
+
     fdAlterar.ParamByName('nome').AsString      := oCliente.Nome;
     fdAlterar.ParamByName('tipo').AsString      := oCliente.Tipo;
     fdAlterar.ParamByName('documento').AsString := oCliente.Documento;
@@ -127,6 +149,8 @@ end;
 function TDmCliente.Excluir(iCodigo: Integer; out sErro: string): Boolean;
 begin
   try
+    fdExcluir.Close;
+    fdExcluir.SQL.Text := 'DELETE FROM cliente WHERE id=:id';
     fdExcluir.ParamByName('id').AsInteger := iCodigo;
     fdExcluir.ExecSQL;
     Result := True;
