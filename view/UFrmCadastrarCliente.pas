@@ -190,6 +190,7 @@ end;
 
 procedure TUFormCadastrarCliente.Configuracoes;
 begin
+  DataSourcePesq.DataSet := DmCliente.DataSetPesquisa;
   TabSheetPesquisa.TabVisible := False;
   TabSheetDados.TabVisible := False;
   PageControlPrincipal.activePage := TabSheetPesquisa;
@@ -215,13 +216,13 @@ var
 begin
   oClienteController := TClienteController.Create;
   try
-    if (DmCliente.fdPesquisar.Active) and
-      (DmCliente.fdPesquisar.RecordCount > 0) then
+    if (DataSourcePesq.DataSet.Active) and
+      (DataSourcePesq.DataSet.RecordCount > 0) then
     begin
       if MessageDlg('Deseja realmente excluir este cliente?', mtConfirmation,
         [mbYes, mbNo], 0) = IDYES then
       begin
-        if oClienteController.Excluir(DmCliente.fdPesquisar.FieldByName('id').AsInteger, sErro)
+        if oClienteController.Excluir(DataSourcePesq.DataSet.FieldByName('id').AsInteger, sErro)
           = False then
           raise Exception.Create(sErro);
         oClienteController.Pesquisar(LabeledEditPesquisar.Text);

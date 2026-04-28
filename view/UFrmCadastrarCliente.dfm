@@ -259,7 +259,6 @@ object UFormCadastrarCliente: TUFormCadastrarCliente
     end
   end
   object DataSourcePesq: TDataSource
-    DataSet = DmCliente.fdPesquisar
     Left = 388
     Top = 34
   end

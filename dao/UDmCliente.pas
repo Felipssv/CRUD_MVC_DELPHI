@@ -12,11 +12,13 @@ type
   TDmCliente = class(TDataModule)
     procedure DataModuleCreate(Sender: TObject);
   private
+    fdPesquisar: TFDQuery;
     fdInserir:   TFDQuery;
     fdAlterar:   TFDQuery;
     fdExcluir:   TFDQuery;
+    function GetDataSetPesquisa: TDataSet;
   public
-    fdPesquisar: TFDQuery;
+    property DataSetPesquisa: TDataSet read GetDataSetPesquisa;
     procedure Pesquisar(sNome: string);
     procedure CarregarCliente(oCliente: TCliente; iCodigo: Integer);
     function Inserir(oCliente: TCliente; out sErro: string): Boolean;
@@ -34,6 +36,10 @@ implementation
 
 { TdmCliente }
 
+function TDmCliente.GetDataSetPesquisa: TDataSet;
+begin
+  Result := fdPesquisar;
+end;
 
 procedure TDmCliente.Pesquisar(sNome: string);
 begin
